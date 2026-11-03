@@ -1,16 +1,24 @@
-# Virtual environment
-.venv/
-
 # Python cache
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
 
-# VS Code settings (optional)
-.vscode/
+# Virtual environments
+.venv/
+venv/
+env/
 
-# Mac system files
+# macOS
 .DS_Store
 
-# Generated files
-*.png
-*.jpg
+# IDE settings
+.vscode/
+
+# Python testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Temporary files
+*.log
+*.tmp
