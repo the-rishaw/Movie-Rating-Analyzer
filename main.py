@@ -113,6 +113,29 @@ class MovieDataManager(ctk.CTk):
             columns=["Movie", "Genre", "Rating"]
         )
 
+    def get_statistics(self):
+        if self.df.empty:
+            return None
+
+        return {
+            "total": len(self.df),
+            "average": self.df["Rating"].mean(),
+            "highest": self.df.loc[self.df["Rating"].idxmax()],
+            "lowest": self.df.loc[self.df["Rating"].idxmin()],
+            "genres": self.df["Genre"].nunique()
+        }
+
+    def get_genre_statistics(self):
+        if self.df.empty:
+            return pd.DataFrame()
+
+        return self.df.groupby("Genre")["Rating"].agg(
+            Average="mean",
+            Count="count",
+            Highest="max",
+            Lowest="min"
+        ).sort_values("Average", ascending=False)
+
 class MovieRatingAnalyzer(ctk.CTk):
     def __init__(self, fg_color = None, **kwargs):
         super().__init__(fg_color, **kwargs)
