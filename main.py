@@ -18,6 +18,101 @@ FONT = {
     "card_value": (FONT_FAMILY, 25, "bold")
 }
 
+class MovieDataManager(ctk.CTk):
+    def __init__(self):
+        self.df = pd.DataFrame(columns=["Movies", "Rating", "Genre"])
+        self.skipped_rows = []
+        self.loaded_file = None
+
+    def load_csv(self, file_path):
+        try:
+            raw_df = pd.read_csv(file_path)
+            required_columns = ["Movie", "Genre", "Rating"]
+
+            if not all(column in raw_df.columns for column in required_columns):
+                raise ValueError(
+                    "CSV must contain Movie, Genre and Rating columns."
+                )
+
+            self.clean_data(raw_df)
+            self.loaded_file = file_path
+
+            return True
+        
+        except Exception as error:
+            messagebox.showerror("Import Error", str(error))
+            return False
+
+    def clean_data(self, raw_df):
+        cleaned_rows = []
+        self.skipped_rows = []
+        seen = set()
+
+        for index, row in raw_df.iterrows():
+
+            row_number = index + 1 
+
+            movie = row["Movie"]
+            genre = row["Genre"]
+            rating = row["Rating"]
+
+            if pd.isna(movie) or pd.isna(genre) or pd.isna(rating):
+                self.skipped_rows.append(
+                    {"Row": row_number,
+                     "Reason": "Missing value"}
+                )
+                continue
+
+            movie = str(movie).strip()
+            genre = str(genre).strip()
+
+            if not movie or not genre:
+                self.skipped_rows.append(
+                    {"Row": row_number,
+                     "Reason": "Empty movie or genre"}
+                )
+                continue
+
+            try:
+                rating = float(rating)
+            except (ValueError, TypeError):
+                self.skipped_rows.append(
+                    {"Row": row_number,
+                     "Reason": "Invalid Rating"}
+                )
+                continue
+
+            if not 0 <= rating <= 10:
+                self.skipped_rows.append(
+                    {"Row": row_number, "Reason": "Rating outside 0-10"}
+                )
+                continue
+
+            duplicate_key = (
+                movie.casefold(),
+                genre.casefold(),
+                rating
+            )
+
+            if duplicate_key in seen:
+                self.skipped_rows.append(
+                    {"Row": row_number, "Reason": "Duplicate record"}
+                )
+                continue
+
+            seen.add(duplicate_key)
+
+            cleaned_rows.append({
+                "Movie": movie,
+                "Genre": genre,
+                "Rating": rating
+            })
+
+        self.df = pd.DataFrame(
+            cleaned_rows,
+            columns=["Movie", "Genre", "Rating"]
+        )
+
 class MovieRatingAnalyzer(ctk.CTk):
     def __init__(self, fg_color = None, **kwargs):
         super().__init__(fg_color, **kwargs)
@@ -92,7 +187,7 @@ class MovieRatingAnalyzer(ctk.CTk):
             height=42,
             fg_color="#4968df",
             hover_color="#3652bd",
-            command=self.import_csv()
+            # command=self.import_csv()
         ).pack(fill="x", padx=15, pady=(35, 10))
         
         ctk.CTkLabel(
@@ -120,6 +215,45 @@ class MovieRatingAnalyzer(ctk.CTk):
             font=FONT["medium"] + ("bold", ),
             text_color="#404852"
         ).pack(anchor='w', padx=30, pady=(0, 25))
+
+    def create_card(self, parent, title, value):
+        card = ctk.CTkFrame(
+            parent,
+            corner_radius=12,
+            fg_color="#1d222c"
+        )
+
+        card.pack(
+            side="left",
+            fill="both",
+            expand=True,
+            padx=7,
+            pady=7
+        )
+
+        ctk.CTkLabel(
+            card,
+            text=title,
+            text_color="#9299a8",
+            font=FONT["default"]
+        ).pack(anchor="w", padx=18, pady=(18,5))
+
+        ctk.CTkLabel(
+            card,
+            text=title,
+            text_color="#ffffff",
+            font=FONT["card_value"]
+        ).pack(anchor="w", padx=18, pady=(0, 18))
+
+        return card
+
+    def show_empty_message(self, message="Import a CSV file to get started."):
+        ctk.CTkLabel(
+            self.main_layout,
+            text=message,
+            font=FONT["medium"],
+            text_color="#9299a8"
+        ).pack(expand=True)
 
     def navigation(self, page):
         self.current_page = page
@@ -154,25 +288,38 @@ class MovieRatingAnalyzer(ctk.CTk):
             )
             self.navigate(self.current_page)
 
+    #DASHBOARD SECTION
+
     def dashboard_section(self):
         self.clear_page()
         self.create_title("Dashboard", "Overview of your movie rating dataset.")
+        
+
+    #MOVIES SECTION
 
     def movies_section(self):
         self.clear_page()
         self.create_title("Movies", "Browse, search and filter your movie collection.")
 
+    #ANALYTICS SECTION
+
     def analytics_section(self):
         self.clear_page()
         self.create_title("Analytics", "This and that")
+
+    #CHARTS SECTION
 
     def charts_section(self):
         self.clear_page()
         self.create_title("Charts", "This and that")
 
+    # EXPORT SECTION
+
     def export_section(self):
         self.clear_page()
         self.create_title("Exports", "This and that epxorts")
+
+    # SETTING SECTION
 
     def settings_section(self):
         self.clear_page()
