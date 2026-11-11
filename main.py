@@ -136,6 +136,17 @@ class MovieDataManager(ctk.CTk):
             Lowest="min"
         ).sort_values("Average", ascending=False)
 
+    def export_cleaned_data(self, file_path):
+        self.df.to_csv(file_path, index=False)
+
+    def export_genre_report(self, file_path):
+        self.get_genre_statistics().to_csv(file_path)
+
+    def export_skipped_rows(self, file_path):
+        pd.DataFrame(self.skipped_rows).to_csv(file_path, index=False)
+
+
+
 class MovieRatingAnalyzer(ctk.CTk):
     def __init__(self, fg_color = None, **kwargs):
         super().__init__(fg_color, **kwargs)
