@@ -199,7 +199,6 @@ class MovieRatingAnalyzer(ctk.CTk):
             "Movies",
             "Analytics",
             "Charts",
-            "Export",
         )
 
         for page in pages:
@@ -298,8 +297,7 @@ class MovieRatingAnalyzer(ctk.CTk):
             "Dashboard": self.dashboard_section,
             "Movies": self.movies_section,
             "Analytics": self.analytics_section,
-            "Charts": self.charts_section,
-            "Export": self.export_section
+            "Charts": self.charts_section
         }
 
         pages_dict[page]()
@@ -592,15 +590,6 @@ class MovieRatingAnalyzer(ctk.CTk):
             padx=20,
             pady=10
         )
-    # EXPORT SECTION
-
-    def export_section(self):
-        self.clear_page()
-        self.create_title("Exports", "This and that epxorts")
-
-        buttons = [
-            ("Export Cleaned CSV", self.export_cleaned)
-        ]
 
 
 if __name__ == "__main__":
