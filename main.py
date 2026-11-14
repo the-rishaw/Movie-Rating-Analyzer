@@ -518,7 +518,7 @@ class MovieRatingAnalyzer(ctk.CTk):
                 f'{row['Average']:.2f}',
                 int(row["Count"]),
                 f'{row['Highest']:.1f}',
-                f'{row['Highest']:.1f}'
+                f'{row['Lowest']:.1f}'
 
             ]
 
