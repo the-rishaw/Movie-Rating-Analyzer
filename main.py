@@ -200,7 +200,6 @@ class MovieRatingAnalyzer(ctk.CTk):
             "Analytics",
             "Charts",
             "Export",
-            "Settings"
         )
 
         for page in pages:
@@ -244,14 +243,14 @@ class MovieRatingAnalyzer(ctk.CTk):
             self.main_layout,
             text=title,
             font=FONT["large"] + ("bold",),
-            text_color="#404852"
+            text_color="#C9CFD6"
         ).pack(anchor="w", padx=30, pady=(25,0))
 
         ctk.CTkLabel(
             self.main_layout,
             text=subtitle,
             font=FONT["medium"] + ("bold", ),
-            text_color="#404852"
+            text_color="#C9CFD6"
         ).pack(anchor='w', padx=30, pady=(0, 25))
 
     def create_card(self, parent, title, value):
@@ -300,8 +299,7 @@ class MovieRatingAnalyzer(ctk.CTk):
             "Movies": self.movies_section,
             "Analytics": self.analytics_section,
             "Charts": self.charts_section,
-            "Export": self.export_section,
-            "Settings": self.settings_section
+            "Export": self.export_section
         }
 
         pages_dict[page]()
@@ -490,7 +488,7 @@ class MovieRatingAnalyzer(ctk.CTk):
 
     def analytics_section(self):
         self.clear_page()
-        self.create_title("Analytics", "This and that")
+        self.create_title("Analytics", "Exlore movie genres rating and performances")
 
         stats = self.data_manager.get_genre_statistics()
 
@@ -552,19 +550,57 @@ class MovieRatingAnalyzer(ctk.CTk):
 
     def charts_section(self):
         self.clear_page()
-        self.create_title("Charts", "This and that")
+        self.create_title("Charts", "Visual representation of your movie ratings.")
 
+        df = self.data_manager.df
+
+        if df.empty:
+            self.show_empty_message()
+            return 
+
+        figure, axes = plt.subplots(1, 2, figsize=(10, 4))
+        figure.patch.set_facecolor("#191b23")
+
+        genre_average = df.groupby('Genre')['Rating'].mean()
+
+        axes[0].bar(genre_average.index, genre_average.values)
+        axes[0].set_title("Average Rating by Genre", color="white")
+        axes[0].set_ylabel("Rating", color="white")
+        axes[0].tick_params(axis="x", colors="white")
+        axes[0].tick_params(axis="y", color="white")
+
+        axes[1].hist(
+            df["Rating"],
+            bins=10,
+            edgecolor="white"
+        )
+        axes[1].set_title("Rating Distribution", color="white")
+        axes[1].set_xlabel("Rating", color="white")
+        axes[1].set_ylabel("Number of Movies", color="white")
+        axes[1].tick_params(colors="white")
+
+        figure.tight_layout()
+
+        canvas = FigureCanvasTkAgg(
+            figure,
+            master=self.main_layout
+        )
+        canvas.draw()
+        canvas.get_tk_widget().pack(
+            fill='both',
+            expand=True,
+            padx=20,
+            pady=10
+        )
     # EXPORT SECTION
 
     def export_section(self):
         self.clear_page()
         self.create_title("Exports", "This and that epxorts")
 
-    # SETTING SECTION
-
-    def settings_section(self):
-        self.clear_page()
-        self.create_title("Settings", "This and that settings")
+        buttons = [
+            ("Export Cleaned CSV", self.export_cleaned)
+        ]
 
 
 if __name__ == "__main__":
