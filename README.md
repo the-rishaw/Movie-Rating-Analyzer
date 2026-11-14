@@ -1,164 +1,131 @@
-
 # 🎬 Movie Rating Analyzer
 
-A Python-based desktop application to import, clean, analyze, and visualize movie rating datasets through a modern graphical user interface.
+A Python desktop application for analyzing movie ratings, exploring genre-wise performance, cleaning movie datasets, and visualizing rating distributions.
 
-Built using **Python, CustomTkinter, Pandas, and Matplotlib**, this application transforms raw movie data into meaningful insights through statistical analysis and interactive visualizations.
-
----
-
-## 📌 Overview
-
-Movie Rating Analyzer is designed to make movie rating analysis simple and accessible. Users can import movie datasets in CSV format, automatically clean invalid records, explore movie information, compare genres, and visualize rating distributions.
-
-The application follows an **Object-Oriented Programming (OOP)** approach, separating data management from the graphical interface for better code organization and maintainability.
+Built using **Python, CustomTkinter, Pandas, and Matplotlib**, this application provides an interactive interface for understanding movie rating data.
 
 ## ✨ Features
 
-### 📊 Interactive Dashboard
-- View the total number of movies.
-- Calculate the overall average rating.
-- Identify the highest-rated movie.
-- Identify the lowest-rated movie.
-- Display the number of unique genres.
-- View the number of skipped records.
+### 1. Dashboard
+- Total number of movies.
+- Overall average rating.
+- Number of unique genres.
+- Number of skipped records.
+- Highest-rated movie.
+- Lowest-rated movie.
 
-### 📂 CSV Import & Data Cleaning
-- Import movie datasets from CSV files.
-- Validate required columns.
-- Detect missing and empty values.
-- Identify invalid or non-numeric ratings.
-- Reject ratings outside the 0–10 range.
-- Detect duplicate movie records.
-- Keep track of skipped records and their reasons.
-
-### 🎞️ Movie Management
-- Browse imported movie records.
+### 2. Movies
+- Display all imported movies.
 - Search movies by title.
 - Filter movies by genre.
-- View movie names, genres, and ratings.
+- View movie ratings and genres.
 
-### 📈 Statistical Analytics
-- Calculate average ratings by genre.
-- Find the highest and lowest ratings in each genre.
-- Count movies belonging to each genre.
+### 3. Analytics
+- Genre-wise average rating.
+- Number of movies in each genre.
+- Highest rating in each genre.
+- Lowest rating in each genre.
 - Identify the best-performing genre.
 
-### 📉 Data Visualization
-- Genre-wise average rating bar chart.
-- Movie rating distribution histogram.
-- Graphical representation using Matplotlib.
+### 4. Charts
+- Bar chart showing average ratings by genre.
+- Histogram showing movie rating distribution.
 
-### 📤 Data Export
-- Export cleaned movie datasets.
-- Export genre-wise analytical reports.
-- Export skipped records with cleaning reasons.
-
-### ⚙️ Appearance Settings
-- Dark mode.
-- Light mode.
-- System appearance mode.
-
----
+### 5. CSV Import and Data Cleaning
+- Import movie datasets using CSV files.
+- Validate required columns.
+- Handle missing and empty values.
+- Reject non-numeric ratings.
+- Reject ratings outside the 0–10 range.
+- Detect and skip duplicate records.
+- Track skipped records and their reasons.
 
 ## 🛠️ Technologies Used
 
 | Technology | Purpose |
 |---|---|
 | Python | Core programming language |
-| CustomTkinter | Modern desktop GUI |
-| Pandas | Data processing and analysis |
+| CustomTkinter | Desktop graphical interface |
+| Pandas | CSV processing and data analysis |
 | Matplotlib | Data visualization |
-| Tkinter | Native file dialogs and message boxes |
-| CSV | Dataset format |
-
----
+| Tkinter | File selection and message dialogs |
 
 ## 📁 Project Structure
 
 ```text
 Movie-Rating-Analyzer/
 │
-├── .venv/                  # Virtual environment (not committed)
+├── main.py
+├── requirements.txt
+├── README.md
+├── .gitignore
 │
-├── main.py                 # Main application
-├── movies.csv              # Sample movie dataset
-├── requirements.txt        # Project dependencies
-├── README.md               # Project documentation
-└── .gitignore              # Git ignored files
+└── .venv/
 ```
 
----
+`.venv/` is your local virtual environment and should not be committed to GitHub.
 
-## 🚀 Getting Started
+## ⚙️ Installation and Setup
 
-Follow these instructions to run the project locally.
+### Prerequisites
 
-### 1. Clone the Repository
+- Python 3.10 or newer
+- Git
+- pip
+
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/the-rishaw/Movie-Rating-Analyzer.git
 ```
 
-Navigate to the project directory:
+### 2. Navigate to the project directory
 
 ```bash
 cd Movie-Rating-Analyzer
 ```
 
-### 2. Create a Virtual Environment
-
-Make sure Python 3.10 or later is installed.
-
-Create a virtual environment:
+### 3. Create a virtual environment
 
 ```bash
-python3 -m venv .venv
+python -m venv .venv
 ```
 
-### 3. Activate the Virtual Environment
+### 4. Activate the virtual environment
 
-**macOS / Linux:**
+**macOS / Linux**
 
 ```bash
 source .venv/bin/activate
 ```
 
-**Windows:**
+**Windows**
 
 ```bash
 .venv\Scripts\activate
 ```
 
-### 4. Install Dependencies
+### 5. Install dependencies
 
 ```bash
-python -m pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
-If `requirements.txt` is not available, install the dependencies manually:
-
-```bash
-python -m pip install customtkinter pandas matplotlib
-```
-
-### 5. Run the Application
+### 6. Run the application
 
 ```bash
 python main.py
 ```
 
----
+## 📄 CSV Dataset Format
 
-## 📄 Dataset Format
+The application expects a CSV file containing these three required columns:
 
-The application accepts CSV files containing the following three required columns:
-
-| Column | Description | Example |
-|---|---|---|
-| Movie | Movie title | Inception |
-| Genre | Movie genre | SciFi |
-| Rating | Movie rating between 0 and 10 | 8.8 |
+| Column | Description |
+|---|---|
+| Movie | Name of the movie |
+| Genre | Movie genre |
+| Rating | Movie rating between 0 and 10 |
 
 ### Sample Dataset
 
@@ -174,130 +141,67 @@ Gladiator,Action,8.5
 Sholay,Action,10
 ```
 
-You can use the included `movies.csv` file to test the application.
-
----
-
 ## 🧹 Data Cleaning Rules
 
-The application validates every imported record before including it in the analysis.
+The application validates the imported dataset before performing analysis.
 
 | Condition | Action |
 |---|---|
-| Missing movie name | Skip record |
-| Missing genre | Skip record |
-| Missing rating | Skip record |
+| Missing values | Skip record |
 | Empty movie or genre | Skip record |
 | Non-numeric rating | Skip record |
 | Rating below 0 | Skip record |
 | Rating above 10 | Skip record |
-| Duplicate record | Skip duplicate |
+| Duplicate record | Skip record |
 
-Valid records are retained and used for statistical calculations and visualizations.
+Only valid records are included in the analysis.
 
----
+## 🏗️ Application Architecture
 
-## 🧠 Object-Oriented Design
+The project follows an object-oriented programming approach with two primary classes.
 
-The application is organized into two main classes:
-
-### 1. `MovieDataManager`
+### MovieDataManager
 
 Responsible for:
 - Loading CSV datasets.
-- Cleaning and validating records.
-- Calculating movie statistics.
-- Generating genre-wise analytics.
-- Exporting datasets and reports.
+- Cleaning and validating data.
+- Managing movie records.
+- Calculating overall statistics.
+- Generating genre-wise statistics.
 
-### 2. `MovieRatingAnalyzer`
+### MovieRatingAnalyzer
 
 Responsible for:
-- Creating the main application window.
-- Managing the graphical interface.
-- Handling navigation between pages.
-- Displaying movie data and analytics.
-- Rendering charts.
-- Handling user interactions.
-
-This separation makes the application easier to understand, maintain, and extend.
-
----
-
-## 🔄 Version Management
-
-This project uses Git for version control and GitHub for source code hosting.
-
-### Versioning Format
-
-The project follows Semantic Versioning:
-
-`MAJOR.MINOR.PATCH`
-
-Example: `1.0.0`
-
-- **MAJOR:** Major changes or incompatible updates.
-- **MINOR:** New features and functionality.
-- **PATCH:** Bug fixes and minor improvements.
-
-### Git Workflow
-
-```bash
-# Check project changes
-git status
-
-# Stage changes
-git add .
-
-# Commit changes
-git commit -m "Describe your changes"
-
-# Push changes to GitHub
-git push
-```
-
----
-
-## 🔮 Future Improvements
-
-- Add, edit, and delete movie records.
-- Sort movies by title, genre, and rating.
-- Add advanced search and filtering.
-- Support additional data formats such as Excel.
-- Add rating distribution by genre.
-- Add interactive charts and detailed reports.
-- Add database integration for persistent storage.
-- Improve the user interface and dashboard experience.
-
----
+- Creating the desktop application.
+- Managing sidebar navigation.
+- Displaying the dashboard.
+- Rendering the movie collection.
+- Displaying genre analytics.
+- Integrating Matplotlib charts.
 
 ## 🎯 Project Objectives
 
-- Understand practical implementation of Python programming.
-- Apply Object-Oriented Programming concepts.
-- Learn data processing using Pandas.
-- Implement data validation and cleaning.
-- Generate statistical insights from datasets.
-- Visualize data using Matplotlib.
-- Develop a desktop application using CustomTkinter.
-- Practice Git and GitHub version management.
+- Practice Python object-oriented programming.
+- Understand data manipulation using Pandas.
+- Perform statistical analysis on real-world datasets.
+- Learn data visualization using Matplotlib.
+- Develop a functional desktop application using CustomTkinter.
+- Implement CSV handling and data validation.
 
----
+## 🚀 Future Improvements
+
+- Movie poster integration.
+- Advanced movie filtering and sorting.
+- More statistical visualizations.
+- Improved dashboard customization.
+- Support for larger movie datasets.
 
 ## 👨‍💻 Author
 
 **Rishaw Kumar**
 
-- GitHub: [@the-rishaw](https://github.com/the-rishaw)
+GitHub: [@the-rishaw](https://github.com/the-rishaw)
 
 ---
 
-## 📜 License
-
-This project is open-source and available under the MIT License.
-
----
-
-<p align="center">
-  Made with ❤️ using Python
-</p>
+*Built as a Python project to explore data analysis, visualization, and object-oriented programming.*
