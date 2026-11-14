@@ -18,9 +18,9 @@ FONT = {
     "card_value": (FONT_FAMILY, 25, "bold")
 }
 
-class MovieDataManager(ctk.CTk):
+class MovieDataManager:
     def __init__(self):
-        self.df = pd.DataFrame(columns=["Movies", "Rating", "Genre"])
+        self.df = pd.DataFrame(columns=["Movie", "Genre", "Rating"])
         self.skipped_rows = []
         self.loaded_file = None
 
@@ -154,7 +154,11 @@ class MovieRatingAnalyzer(ctk.CTk):
         self.geometry("1200x750")
         self.minsize(1000, 650)
 
+        self.data_manager = MovieDataManager()
+
         self.current_page = "Dashboard"
+        self.search_var = ctk.StringVar()
+        self.genre_var = ctk.StringVar(value = "All Genres")
         # self.configure(fg_color="#ffffff")
         self.app_layout()
         self.dashboard_section()
@@ -221,7 +225,7 @@ class MovieRatingAnalyzer(ctk.CTk):
             height=42,
             fg_color="#4968df",
             hover_color="#3652bd",
-            # command=self.import_csv()
+            command=self.import_csv
         ).pack(fill="x", padx=15, pady=(35, 10))
         
         ctk.CTkLabel(
@@ -274,7 +278,7 @@ class MovieRatingAnalyzer(ctk.CTk):
 
         ctk.CTkLabel(
             card,
-            text=title,
+            text=str(value),
             text_color="#ffffff",
             font=FONT["card_value"]
         ).pack(anchor="w", padx=18, pady=(0, 18))
@@ -292,7 +296,7 @@ class MovieRatingAnalyzer(ctk.CTk):
     def navigation(self, page):
         self.current_page = page
         pages_dict = {
-            "Dashboar": self.dashboard_section,
+            "Dashboard": self.dashboard_section,
             "Movies": self.movies_section,
             "Analytics": self.analytics_section,
             "Charts": self.charts_section,
@@ -301,6 +305,8 @@ class MovieRatingAnalyzer(ctk.CTk):
         }
 
         pages_dict[page]()
+
+
 
     def import_csv(self):
         selected_file_path = filedialog.askopenfilename(
@@ -317,17 +323,61 @@ class MovieRatingAnalyzer(ctk.CTk):
         if success:
             messagebox.showinfo(
                 "Import Successful",
-                f"Loaded {len(self.data_manager.df)} valid movies.\n",
+                f"Loaded {len(self.data_manager.df)} valid movies.\n" 
                 f"Skipped {len(self.data_manager.skipped_rows)} rows."
             )
-            self.navigate(self.current_page)
+            self.navigation(self.current_page)
 
     #DASHBOARD SECTION
 
     def dashboard_section(self):
         self.clear_page()
         self.create_title("Dashboard", "Overview of your movie rating dataset.")
-        
+
+        stats = self.data_manager.get_statistics()
+
+        if stats is None:
+            self.show_empty_message()
+            return
+
+        cards = ctk.CTkFrame(
+            self.main_layout,
+            fg_color="transparent"
+        )
+        cards.pack(fill="x", padx=20)
+
+        self.create_card(cards, "Total Movies", stats["total"])
+        self.create_card(cards, "Average Rating", f'{stats["average"]:.2f}')
+        self.create_card(cards, "Genres", stats["genres"])
+        self.create_card(cards, "Skipped Rows", len(self.data_manager.skipped_rows))
+
+        details = ctk.CTkFrame(
+            self.main_layout,
+            fg_color="#1d222c",
+            corner_radius=12
+        )
+        details.pack(fill="x", padx=27, pady=20)
+
+        highest = stats["highest"]
+        lowest = stats["lowest"]
+
+        ctk.CTkLabel(
+            details,
+            text="Rating Highlights",
+            font=FONT["large"]
+        ).pack(anchor="w", padx=20, pady=(18, 12))
+
+        ctk.CTkLabel(
+            details,
+            text=f'Highest Rated: {highest["Movie"]} ({highest["Rating"]}/10)',
+            font=FONT["medium"]
+        ).pack(anchor="w", padx=20, pady=7)
+
+        ctk.CTkLabel(
+            details,
+            text=f'Lowest Rated: {lowest["Movie"]} ({lowest["Rating"]}/10)',
+            font=FONT["medium"]
+        ).pack(anchor="w", padx=20, pady=7)
 
     #MOVIES SECTION
 
@@ -335,11 +385,168 @@ class MovieRatingAnalyzer(ctk.CTk):
         self.clear_page()
         self.create_title("Movies", "Browse, search and filter your movie collection.")
 
+        df = self.data_manager.df
+
+        if df.empty:
+            self.show_empty_message()
+            return
+
+        controls = ctk.CTkFrame(
+            self.main_layout,
+            fg_color="transparent"
+        )
+        controls.pack(fill="x", padx=30, pady=5)
+
+        search = ctk.CTkEntry(
+            controls,
+            placeholder_text="Search Movie...",
+            textvariable=self.search_var,
+            width=260
+        )
+        search.pack(side="left", padx=(0, 10))
+        search.bind("<KeyRelease>", lambda event: self.display_movies())
+
+        genres = ["All Genres"] + sorted(df['Genre'].unique().tolist())
+
+        genre_menu = ctk.CTkOptionMenu(
+            controls,
+            values=genres,
+            variable=self.genre_var,
+            command=lambda value: self.display_movies()
+        )
+        genre_menu.pack(side="left")
+
+        self.movie_list = ctk.CTkScrollableFrame(
+            self.main_layout,
+            fg_color="#191c23"
+        )
+        self.movie_list.pack(
+            fill="both",
+            expand=True,
+            padx=30,
+            pady=20
+        )
+
+        self.display_movies()
+
+    def display_movies(self):
+        for widget in self.movie_list.winfo_children():
+            widget.destroy()
+        
+        df = self.data_manager.df.copy()
+        
+        search_text = self.search_var.get().strip().casefold()
+        
+        if search_text:
+            df = df[
+                df["Movie"].str.casefold().str.contains(
+                    search_text,
+                    na=False
+                )
+            ]
+        
+        selected_genre = self.genre_var.get()
+        
+        if selected_genre != "All Genres":
+            df = df[df["Genre"] == selected_genre]
+        
+        for _, row in df.iterrows():
+        
+            movie_row = ctk.CTkFrame(
+                self.movie_list,
+                fg_color="#252b36",
+                corner_radius=8
+            )
+            movie_row.pack(fill="x", padx=5, pady=5)
+        
+            ctk.CTkLabel(
+                movie_row,
+                text=row["Movie"],
+                font=("Arial", 14, "bold"),
+                anchor="w"
+            ).pack(side="left", padx=15, pady=14)
+        
+            ctk.CTkLabel(
+                movie_row,
+                text=row["Genre"],
+                text_color="#9299a8"
+            ).pack(side="right", padx=15)
+        
+            ctk.CTkLabel(
+                movie_row,
+                text=f'{row["Rating"]:.1f}/10',
+                text_color="#70b7ff",
+                font=("Arial", 13, "bold")
+            ).pack(side="right", padx=15)
+        
+        if df.empty:
+            ctk.CTkLabel(
+                self.movie_list,
+                text="No matching movies found.",
+                text_color="#9299a8"
+            ).pack(pady=30)
+
     #ANALYTICS SECTION
 
     def analytics_section(self):
         self.clear_page()
         self.create_title("Analytics", "This and that")
+
+        stats = self.data_manager.get_genre_statistics()
+
+        if stats.empty:
+            self.show_empty_message()
+            return
+
+        table = ctk.CTkFrame(
+            self.main_layout,
+            fg_color="#1d222c",
+            corner_radius=12
+        )
+        table.pack(fill="x", padx=30, pady=10)
+
+        headers = ["Genre", "Average", "Count", "Highest", "Lowest"]
+
+        for column, heading in enumerate(headers):
+
+            ctk.CTkLabel(
+                table,
+                text=heading,
+                font=FONT["medium"],
+                text_color="#70b7ff"
+            ).grid(row=0, column=column, padx=15, pady=15)
+
+        for row_number, (genre, row) in enumerate(stats.iterrows(), start=1):
+            values = [
+                genre,
+                f'{row['Average']:.2f}',
+                int(row["Count"]),
+                f'{row['Highest']:.1f}',
+                f'{row['Highest']:.1f}'
+
+            ]
+
+            for column, value in enumerate(values):
+
+                ctk.CTkLabel(
+                    table,
+                    text=str(value),
+                    font=FONT["default"]
+                ).grid(
+                    row=row_number,
+                    column=column,
+                    padx=15,
+                    pady=12
+                )
+
+        best_genre = stats.index[0]
+
+        ctk.CTkLabel(
+            self.main_layout,
+            text=f"Best Performing Genre: {best_genre}",
+            font=FONT["default"],
+            text_color="#70b7ff"
+        ).pack(anchor="w", padx=35, pady=25)
 
     #CHARTS SECTION
 
