@@ -60,12 +60,25 @@ Built using **Python, CustomTkinter, Pandas, and Matplotlib**, this application 
 ```text
 Movie-Rating-Analyzer/
 │
-├── main.py
-├── requirements.txt
-├── README.md
-├── .gitignore
+├── main.py                  # Main application source code
+├── README.md                # Project overview and setup instructions
+├── Summary.md               # Project summary, challenges, and test cases
+├── requirements.txt         # Required Python libraries
+├── .gitignore               # Files and folders ignored by Git
+├── LICENSE                  # MIT LICENSE
+├── .python-version          # Python Version used in Project
 │
-└── .venv/
+├── data/
+│   └── sample_movies.csv    # Sample movie dataset used for testing
+|   ├── movies.csv           # Another movie dataset used for testing
+│
+└── Screenshots/
+    ├── Analytics-SS.png     # Genre-wise analytics
+    ├── Charts-SS.png        # Data visualization
+    ├── Dashboard-SS.png     # Dashboard interface(when CSV not imported)
+    ├── Dashboard-CSV-SS.png # Dashboard Interface(when CSV is imported)
+    ├── Import-CSV.png       # Importing CSV in App
+    ├── Movies-SS.png        # Movies listing section
 ```
 
 `.venv/` is your local virtual environment and should not be committed to GitHub.
@@ -144,6 +157,13 @@ Avatar,SciFi,7.8
 The Notebook,Romance,7.5
 Gladiator,Action,8.5
 Sholay,Action,10
+Sholay,Action,10
+Ironman,Action, abc
+The Batman,Action,11
+Batman Begins,Acton,
+Action,9
+Batman Begins,,9
+Batman Begins,Action,-2
 ```
 
 ## 🧹 Data Cleaning Rules
