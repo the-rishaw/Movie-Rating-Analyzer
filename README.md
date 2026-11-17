@@ -1,5 +1,10 @@
 # 🎬 Movie Rating Analyzer
 
+## Student Information
+- Name: Rishaw Kumar
+- Section: J
+- Roll No: RU-26-02282
+
 A Python desktop application for analyzing movie ratings, exploring genre-wise performance, cleaning movie datasets, and visualizing rating distributions.
 
 Built using **Python, CustomTkinter, Pandas, and Matplotlib**, this application provides an interactive interface for understanding movie rating data.
@@ -195,6 +200,20 @@ Responsible for:
 - More statistical visualizations.
 - Improved dashboard customization.
 - Support for larger movie datasets.
+
+## 📸 Application Screenshots
+
+### Dashboard
+![Dashboard](screenshots/Dashboard-CSV-ss.png)
+
+### Movies
+![Movies](screenshots/Movies-SS.png)
+
+### Analytics
+![Analytics](screenshots/Analytics-SS.png)
+
+### Charts
+![Charts](screenshots/Charts-SS.png)
 
 ## 👨‍💻 Author
 
